@@ -15,7 +15,7 @@ Table of Contents
    
    1.5. [Country codes](#country-codes)
    
-2. [Geocoder](#geocoder)
+2. [Direct geocoder](#direct-geocoder)
 
 3. [Reverse geocoder](#reverse-geocoder)
 
@@ -64,36 +64,50 @@ Available country codes:
  - **eg** Egypt
  - **ph** Philippines
 
-Geocoder
-========
+Direct geocoder
+===============
 
-``GET /v1.0/geocoder/<country_code>/location``
+``GET /v1.0/geocoder/<country_code>/direct``
 
-Geocoder allows to receive coordinates for the transmitted address.
+Direct geocoder allows to receive coordinates for the transmitted address.
 
 Required parameters:
  - **address** String
 
 Request example:
 ```bash
-curl --header 'X-Maaaps-Api-Token: XXXXXXX' 'https://api.maaaps.io/v1.0/geocoder/in/location?address=Mumbai'
+curl --header 'X-Maaaps-Api-Token: XXXXXXX' 'https://api.maaaps.io/v1.0/geocoder/in/direct?address=630 Ongpin Street Binondo Manila'
 ```
 
 Response example:
 ```json
 {
-  "requested_address": "Mumbai",
-  "point": {
-    "formatted_address": "Mumbai, Mumbai Metropolitan Region, Mumbai Suburban, Maharashtra, India",
-    "lat": "19.0759899",
-    "lon": "72.8773928"
-  }
+   "requested_address": "630 Ongpin Street Binondo Manila",
+   "address": {
+      "formatted_address": "630 Ongpin Street Binondo Third District Manila Metro Manila Luzon",
+      "postcode": null,
+      "region": "Luzon",
+      "city": "Manila Metro Manila",
+      "state_district": null,
+      "suburb": "Binondo",
+      "city_district": "Third District",
+      "quarter": null,
+      "road": "Ongpin Street",
+      "name": null,
+      "building_number": "630",
+      "amenity": "fire_station",
+      "location": {
+         "lat": 14.6002,
+         "lon": 120.97524
+      }
+   },
+   "accuracy_level": "building"
 }
 ```
 
 Reverse geocoder
 ================
-``GET /v1.0/geocoder/<country_code>/address``
+``GET /v1.0/geocoder/<country_code>/reverse``
 
 Geocoder allows to receive detailed address information on coordinates.
 
@@ -101,33 +115,64 @@ Required parameters:
 - **lat** Float
 - **lon** Float
 
+Optional parameters:
+- **radius_meters** Int, by default 100. Min - 100, Max - 1000
+- **limit** Int, by default 1. Min - 1, Max - 100
+
 Request example:
 ```bash
-curl --header 'X-Maaaps-Api-Token: XXXXXXX' 'https://api.maaaps.io/v1.0/geocoder/in/address?lat=19.180674&lon=72.8331'
+curl --header 'X-Maaaps-Api-Token: XXXXXXX' 'https://api.maaaps.io/v1.0/geocoder/in/reverse?lat=14.6002&lon=120.97524&limit=2'
 ```
 
 Response example:
 ```json
 {
-  "requested_lat": "19.180674",
-  "requested_lon": "72.8331",
-  "accuracy_type": "city_district",
-  "address_details": {
-    "suburb": "Malad West",
-    "city_district": "Zone 4",
-    "city": "Mumbai",
-    "municipality": "Mumbai Metropolitan Region",
-    "state_district": "Mumbai Suburban",
-    "state": "Maharashtra",
-    "postcode": "400064",
-    "country": "India",
-    "country_code": "in"
-  },
-  "point": {
-    "formatted_address": "Malad West, P/N Ward, Zone 4, Mumbai, Mumbai Metropolitan Region, Mumbai Suburban, Maharashtra, 400064, India",
-    "lat": "19.180621360807",
-    "lon": "72.833002036865"
-  }
+   "requested_lat": "14.6002",
+   "requested_lon": "120.97524",
+   "data": [
+      {
+         "address": {
+            "formatted_address": "630 Ongpin Street Binondo Third District Manila Metro Manila Luzon",
+            "postcode": null,
+            "region": "Luzon",
+            "city": "Manila Metro Manila",
+            "state_district": null,
+            "suburb": "Binondo",
+            "city_district": "Third District",
+            "quarter": null,
+            "road": "Ongpin Street",
+            "name": null,
+            "building_number": "630",
+            "amenity": "fire_station",
+            "location": {
+               "lat": 14.6002,
+               "lon": 120.97524
+            }
+         },
+         "straight_distance_meters": 0
+      },
+      {
+         "address": {
+            "formatted_address": "650 Ongpin Street Binondo Third District Manila Metro Manila Luzon",
+            "postcode": null,
+            "region": "Luzon",
+            "city": "Manila Metro Manila",
+            "state_district": null,
+            "suburb": "Binondo",
+            "city_district": "Third District",
+            "quarter": null,
+            "road": "Ongpin Street",
+            "name": null,
+            "building_number": "650",
+            "amenity": null,
+            "location": {
+               "lat": 14.60011,
+               "lon": 120.97523
+            }
+         },
+         "straight_distance_meters": 10
+      }
+   ]
 }
 ```
 
@@ -149,38 +194,44 @@ curl --header 'X-Maaaps-Api-Token: XXXXXXX' 'https://api.maaaps.io/v1.0/geocoder
 Response example:
 ```json
 {
-  "requested_address": "Zone",
-  "suggestions": [
-    {
-      "address": "Zone 7 Ambattur, Ambattur, Thiruvallur District, Tamil Nadu, India"
-    },
-    {
-      "address": "Zone 11 Valasaravakkam, Ambattur, Thiruvallur District, Tamil Nadu, India"
-    },
-    {
-      "address": "East Zone, Bengaluru, Bangalore North, Bangalore Urban, Karnataka, India"
-    },
-    {
-      "address": "Zone 3 Madhavaram, Mathavaram, Thiruvallur District, Tamil Nadu, India"
-    },
-    {
-      "address": "West Zone, Bengaluru, Bangalore North, Bangalore Urban, Karnataka, India"
-    },
-    {
-      "address": "Zone 4 Tondiarpet, Chennai District, Tamil Nadu, India"
-    },
-    {
-      "address": "Greater Hyderabad Municipal Corporation East Zone, Hyderabad, Uppal mandal, Medchal–Malkajgiri, Telangana, India"
-    },
-    {
-      "address": "Zone 12 Alandur, Alandur, Tamil Nadu, India"
-    },
-    {
-      "address": "Greater Hyderabad Municipal Corporation South Zone, Hyderabad, Bahadurpura mandal, Hyderabad, Telangana, India"
-    },
-    {
-      "address": "Greater Hyderabad Municipal Corporation Central Zone, Hyderabad, Khairatabad mandal, Hyderabad, Telangana, India"
-    }
-  ]
+   "requested_address": "Ongpin Street",
+   "addresses": [
+      {
+         "formatted_address": "Binondo Manila Ongpin Street Binondo Third District Manila Metro Manila Luzon",
+         "postcode": null,
+         "region": "Luzon",
+         "city": "Manila Metro Manila",
+         "state_district": null,
+         "suburb": "Binondo",
+         "city_district": "Third District",
+         "quarter": null,
+         "road": "Ongpin Street",
+         "name": null,
+         "building_number": "Binondo Manila",
+         "amenity": "restaurant",
+         "location": {
+            "lat": 14.600095,
+            "lon": 120.975145
+         }
+      },
+      {
+         "formatted_address": "630 Ongpin Street Binondo Third District Manila Metro Manila Luzon",
+         "postcode": null,
+         "region": "Luzon",
+         "city": "Manila Metro Manila",
+         "state_district": null,
+         "suburb": "Binondo",
+         "city_district": "Third District",
+         "quarter": null,
+         "road": "Ongpin Street",
+         "name": null,
+         "building_number": "630",
+         "amenity": "fire_station",
+         "location": {
+            "lat": 14.6002,
+            "lon": 120.97524
+         }
+      }
+   ]
 }
 ```
